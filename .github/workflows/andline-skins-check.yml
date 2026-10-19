@@ -1,0 +1,27 @@
+name: ANDLINE Skin Service build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  skin-service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build standalone Skin Service
+        run: |
+          dotnet publish src/Gml.Web.Skin.Service/Gml.Web.Skin.Service.csproj \
+            --configuration Release --output /tmp/gml-skins-ci \
+            --no-self-contained --nologo -p:UseAppHost=false
+          test -s /tmp/gml-skins-ci/Gml.Web.Skin.Service.dll
